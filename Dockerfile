@@ -5,6 +5,7 @@ MAINTAINER Guy Taylor <thebigguy.co.uk@gmail.com>
 RUN apt-get update -qy ;\
     apt-get install -qy openvpn openssl ca-certificates iptables supervisor python-pip ;\
     pip install awscli ;\
+    pip install six ;\
     pip install supervisor-stdout ;\
     apt-get purge -qy python-pip ;\
     apt-get autoremove -qy ;\
