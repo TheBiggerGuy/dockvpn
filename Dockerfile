@@ -3,6 +3,7 @@ FROM ubuntu:vivid
 RUN apt-get update -qy ;\
     apt-get install -qy openvpn openssl ca-certificates iptables supervisor python-pip ;\
     pip install awscli ;\
+    pip install supervisor-stdout ;\
     apt-get purge -qy python-pip ;\
     apt-get auto -qy autoremove ;\
     apt-get clean -qy ;\
@@ -28,4 +29,4 @@ RUN cat /etc/openvpn/tcp.conf /etc/openvpn/common.conf >> /etc/openvpn/tcp.conf.
 
 COPY bin/* /usr/bin/
 
-CMD ["/usr/bin/dockervpn"]
+ENTRYPOINT ["/usr/bin/dockervpn"]
