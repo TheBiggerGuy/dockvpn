@@ -22,7 +22,7 @@ chmod 700 /etc/openvpn
 chmod 600 /etc/openvpn/*.pem
 
 echo "Setting up network"
-/usr/bin/config-network
+iptables -t nat -A POSTROUTING -s 192.168.255.0/24 -o eth0 -j MASQUERADE
 
 echo "Creating log dir"
 mkdir -p /var/log/openvpn
