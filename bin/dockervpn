@@ -1,0 +1,32 @@
+#!/bin/sh
+set -e
+#set -o verbose
+
+echo "Date time: $(date)"
+
+echo "AWS_ACCESS_KEY_ID=$(echo ${AWS_ACCESS_KEY_ID} | head --bytes=3)XXXXXXXXXXXXXXXX"
+echo "AWS_SECRET_ACCESS_KEY=$(echo ${AWS_SECRET_ACCESS_KEY} | head --bytes=3)XXXXXXXXXXXXXXXXXXXXXX"
+echo "AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}"
+echo "DOCKERVPN_BUCKET=${DOCKERVPN_BUCKET}"
+
+echo "Copying config from S3"
+ls -r /etc/openvpn
+aws s3 cp --recursive "s3://${DOCKERVPN_BUCKET}/" /
+ls -r /etc/openvpn
+
+echo "Creating new DH key"
+/usr/bin/gen-dh /etc/openvpn/dh.pem
+
+echo "Setting permissions"
+chmod 700 /etc/openvpn
+chmod 600 /etc/openvpn/*.pem
+
+echo "Setting up network"
+/usr/bin/config-network
+
+echo "Creating log dir"
+mkdir -p /var/log/openvpn
+mkdir -p /var/log/supervisord
+
+echo "Starting supervisord"
+/usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf

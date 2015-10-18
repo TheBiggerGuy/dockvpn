@@ -1,0 +1,6 @@
+#!/bin/sh
+set -e
+
+openssl dhparam -out $1 1024
+chmod 600 $1
+

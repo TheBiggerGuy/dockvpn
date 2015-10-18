@@ -1,26 +1,31 @@
 FROM ubuntu:vivid
 
 RUN apt-get update -qy ;\
-    apt-get install -qy openvpn iptables supervisor ;\
+    apt-get install -qy openvpn openssl ca-certificates iptables supervisor python-pip ;\
+    pip install awscli ;\
+    apt-get purge -qy python-pip ;\
+    apt-get auto -qy autoremove ;\
     apt-get clean -qy ;\
-    apt-get purge -qy
+    apt-get purge -qy ;\
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-RUN mkdir -p /var/log/supervisor
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-
-COPY config/* /etc/openvpn/
-RUN cat /etc/openvpn/common.conf >> /etc/openvpn/tcp.config ;\
-    cat /etc/openvpn/common.conf >> /etc/openvpn/udp.config ;\
-    rm /etc/openvpn/common.conf
-
-RUN mkdir -p /var/log/supervisor ;\
-    mkdir -p /var/log/openvpn
-
-ADD ./bin /usr/local/sbin
-VOLUME /etc/openvpn
+VOLUME /var/log
 
 RUN mkdir -p /dev/net ;\
     mknod /dev/net/tun c 10 200
 
 EXPOSE 443/tcp 1194/udp
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+COPY config/* /etc/openvpn/
+RUN cat /etc/openvpn/tcp.conf /etc/openvpn/common.conf >> /etc/openvpn/tcp.conf.tmp ;\
+    cat /etc/openvpn/udp.conf /etc/openvpn/common.conf >> /etc/openvpn/udp.conf.tmp ;\
+    mv /etc/openvpn/tcp.conf.tmp /etc/openvpn/tcp.conf ;\
+    mv /etc/openvpn/udp.conf.tmp /etc/openvpn/udp.conf ;\
+    rm /etc/openvpn/common.conf ;\
+    ls /etc/openvpn/
+
+COPY bin/* /usr/bin/
+
+CMD ["/usr/bin/dockervpn"]
