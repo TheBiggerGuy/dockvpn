@@ -1,4 +1,6 @@
-FROM ubuntu:vivid
+FROM ubuntu:wily
+
+MAINTAINER Guy Taylor <thebigguy.co.uk@gmail.com>
 
 RUN apt-get update -qy ;\
     apt-get install -qy openvpn openssl ca-certificates iptables supervisor python-pip ;\
