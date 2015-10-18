@@ -7,7 +7,7 @@ RUN apt-get update -qy ;\
     pip install awscli ;\
     pip install supervisor-stdout ;\
     apt-get purge -qy python-pip ;\
-    apt-get auto -qy autoremove ;\
+    apt-get autoremove -qy ;\
     apt-get clean -qy ;\
     apt-get purge -qy ;\
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
